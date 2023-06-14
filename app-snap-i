@@ -1,0 +1,30 @@
+#!/bin/bash
+
+release_file=/etc/os-release
+
+function install_snap_apps() {
+        echo "Installing apps..."
+
+	# media player
+	echo "VLC Media Player"
+	sudo snap install vlc 
+}
+
+if command -v snap > /dev/null 2>&1
+then
+        echo "Snap is installed."
+        install_snap_apps
+else
+        echo "Snap isn't installed."
+        echo "Installation..."
+
+        if grep -q "Ubuntu" $release_file
+        then
+		sudo apt update && yes | sudo apt upgrade
+		sudo apt install snapd
+        fi
+
+        echo "Installation completed."
+
+        install_snap_apps
+fi
