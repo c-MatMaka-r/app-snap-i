@@ -1,18 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 release_file=/etc/os-release
 
 function install_snap_apps() {
-        echo "Installing apps..."
+  echo "Installing apps..."
 
 	# media player
 	echo "VLC Media Player"
-	sudo snap install vlc 
+	snap install vlc 
 }
+
+function update_apt() {
+  apt update && apt -y upgrade
+}
+
+if [[ $EUID -ne 0 ]]; then
+  echo "Root privileges required."
+  exit 1
+fi
+
+if grep -q "Ubuntu" $release_file
+then
+  update_apt
+fi
 
 if command -v snap > /dev/null 2>&1
 then
-        echo "Snap is installed."
+        echo "Snap is already installed."
         install_snap_apps
 else
         echo "Snap isn't installed."
@@ -20,11 +36,9 @@ else
 
         if grep -q "Ubuntu" $release_file
         then
-		sudo apt update && yes | sudo apt upgrade
-		sudo apt install snapd
+          apt install snapd
+          echo "Snap installation completed."
         fi
-
-        echo "Installation completed."
 
         install_snap_apps
 fi
