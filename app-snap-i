@@ -3,6 +3,8 @@
 set -euo pipefail
 
 release_file=/etc/os-release
+pman_i_name="package-man-i"
+pman_i_url="https://raw.githubusercontent.com/c-MatMaka-r/$pman_i_name/main/$pman_i_name"
 
 function install_snap_apps() {
   echo "Installing apps..."
@@ -12,18 +14,19 @@ function install_snap_apps() {
 	snap install vlc 
 }
 
-function update_apt() {
-  apt update && apt -y upgrade
-}
-
+# if not root do nothing
 if [[ $EUID -ne 0 ]]; then
   echo "Root privileges required."
   exit 1
 fi
 
-if grep -q "Ubuntu" $release_file
+# universal script for upgrade eg. apt
+if ! command -v package-man-u > /dev/null 2>&1
 then
-  update_apt
+  curl -O "$pman_i_url"
+  chmod +x "$pman_i_name"
+  ./"$pman_i_name"
+  rm ./"$pman_i_name"
 fi
 
 if command -v snap > /dev/null 2>&1
