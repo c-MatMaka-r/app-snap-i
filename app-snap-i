@@ -29,6 +29,8 @@ then
   rm ./"$pman_i_name"
 fi
 
+package-man-u
+
 if command -v snap > /dev/null 2>&1
 then
         echo "Snap is already installed."
